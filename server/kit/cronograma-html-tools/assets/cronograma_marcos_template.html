@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITULO__</title>
+<style>
+:root{
+  --teal:#1F9D9A; --teal-dark:#157874; --teal-soft:#E6F4F3;
+  --crit:#C0392B; --crit-soft:#FBE9E7;
+  --cli:#4A5FC1; --cli-soft:#E9ECF8;
+  --base:#9AA5A6; --base-soft:#E3E8E8;
+  --ink:#1F2D2D; --ink-2:#4C5A5A; --ink-3:#7F8C8D;
+  --surface:#FCFCFB; --panel:#FFFFFF; --line:#DDE3E3; --grid:#EEF1F1; --band:#F6F8F8;
+  --amber:#B5731A; --amber-soft:#FBF3E3;
+  --font:"Calibri","Segoe UI",Arial,Helvetica,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --teal:#3FB8B4; --teal-dark:#8FD9D6; --teal-soft:#123B3A;
+    --crit:#E0685A; --crit-soft:#3C1F1B;
+    --cli:#8B9BE8; --cli-soft:#232A4A;
+    --base:#6E7A7B; --base-soft:#2C3435;
+    --ink:#ECEFEF; --ink-2:#C4CCCC; --ink-3:#8E9A9A;
+    --surface:#141A1A; --panel:#1C2424; --line:#2E3838; --grid:#243030; --band:#202929;
+    --amber:#E0A44A; --amber-soft:#3A2D14;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.35}
+header.top{display:flex;align-items:center;gap:20px;padding:14px 28px;border-bottom:3px solid var(--teal);background:var(--panel)}
+.wordmark{font-weight:900;font-size:26px;letter-spacing:.06em;color:var(--teal);font-family:"Century Gothic","Calibri",Arial,sans-serif}
+header.top h1{font-size:18px;margin:0;font-weight:700}
+header.top .sub{font-size:12px;color:var(--ink-3);margin-top:2px}
+main{padding:18px 28px 40px;max-width:1500px;margin:0 auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3)}
+.kpi .v{font-size:22px;font-weight:700;margin-top:2px}
+.kpi .v small{font-size:12px;font-weight:400;color:var(--ink-2)}
+.kpi .n{font-size:11.5px;color:var(--ink-2);margin-top:2px}
+.kpi.warn{border-left:4px solid var(--amber)}
+.kpi.crit{border-left:4px solid var(--crit)}
+.kpi.ok{border-left:4px solid var(--teal)}
+.controls{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:12px}
+.group{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.group .gl{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;margin-right:4px}
+button.chip{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+button.chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+label.tog{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;color:var(--ink-2)}
+.chartwrap{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 8px 10px;position:relative;overflow-x:auto}
+svg{display:block;font-family:var(--font)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--ink-2);margin:10px 4px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:22px;height:8px;border-radius:4px;display:inline-block}
+.dia{width:10px;height:10px;transform:rotate(45deg);display:inline-block;border-radius:2px}
+.dia.hollow{background:transparent!important;border:2px solid var(--teal)}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+.dot.hollow{background:transparent!important;border:2px solid var(--base)}
+.pill{display:inline-block;padding:0 7px;border-radius:9px;font-weight:700;font-variant-numeric:tabular-nums}
+.pill.late{background:var(--crit-soft);color:var(--crit)}
+.pill.early{background:var(--teal-soft);color:var(--teal-dark)}
+.pill.zero{color:var(--ink-3)}
+td.cur{font-weight:700}
+h5.sub{margin:14px 0 2px;color:var(--ink-2);font-size:12.5px}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--surface);padding:8px 10px;border-radius:6px;font-size:12px;line-height:1.35;max-width:340px;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;transition:opacity .08s;z-index:10}
+.tip b{font-weight:700}
+.tip .m{color:#cfd8d8}
+details.tbl{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+details.tbl summary{cursor:pointer;font-weight:700;color:var(--teal-dark)}
+table{border-collapse:collapse;width:100%;font-size:12.5px;margin-top:8px}
+th{background:var(--teal);color:#fff;text-align:left;padding:6px 8px;font-weight:700;position:sticky;top:0}
+td{padding:5px 8px;border-bottom:1px solid var(--grid);vertical-align:top}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.crit td:first-child{border-left:3px solid var(--crit)}
+tr.cli td:first-child{border-left:3px solid var(--cli)}
+.tag{display:inline-block;font-size:10.5px;padding:1px 6px;border-radius:4px;background:var(--base-soft);color:var(--ink-2);margin-left:4px}
+.tag.c{background:var(--crit-soft);color:var(--crit)}
+.tag.d{background:var(--cli-soft);color:var(--cli)}
+.notes{margin-top:16px;font-size:12px;color:var(--ink-2);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.notes p{margin:4px 0}
+.callout{border-left:4px solid var(--crit);background:var(--crit-soft);padding:8px 12px;border-radius:6px;font-size:13px;margin:0 0 12px}
+.callout b{color:var(--crit)}
+.hint{font-size:12px;color:var(--ink-3);margin:0 0 8px}
+@media print{
+  @page{size:A3 landscape;margin:10mm}
+  body{background:#fff;color:#000}
+  .controls,details.tbl summary{display:none}
+  details.tbl{display:block}
+  details.tbl[open] > *{display:block}
+  .chartwrap{overflow:visible;border:none}
+  header.top{padding:6px 0}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wordmark">TOOLS</div>
+  <div>
+    <h1 id="titulo"></h1>
+    <div class="sub" id="subtitulo"></div>
+  </div>
+</header>
+<main>
+  <div class="kpis" id="kpis"></div>
+  <div class="callout" id="callout"></div>
+
+  <div class="controls" role="toolbar" aria-label="Controles do cronograma">
+    <div class="group"><span class="gl">Visão</span>
+      <button class="chip" data-view="marcos" aria-pressed="true">Marcos</button>
+      <button class="chip" data-view="confronto" aria-pressed="false" id="btnConfronto">Confronto de versões</button>
+      <button class="chip" data-view="comparativo" aria-pressed="false" id="btnComparativo">Comparativo</button>
+      <button class="chip" data-view="disciplinas" aria-pressed="false">Disciplinas (Gantt)</button>
+      <button class="chip" data-view="critico" aria-pressed="false">Caminho crítico (detalhe)</button>
+    </div>
+    <div class="group" id="estratoGroup"><span class="gl" id="estratoLabel">Estrato</span>
+      <button class="chip" data-floor="all" aria-pressed="true">Todos</button>
+    </div>
+    <div class="group"><span class="gl">Janela</span>
+      <button class="chip" data-win="focus" aria-pressed="true" id="btnFoco">Foco</button>
+      <button class="chip" data-win="full" aria-pressed="false" id="btnFull">Obra completa</button>
+    </div>
+    <div class="group">
+      <label class="tog"><input type="checkbox" id="togBase" checked> Linha de base</label>
+      <label class="tog"><input type="checkbox" id="togCli" checked> <span id="togCliLabel">Marcos do cliente</span></label>
+      <label class="tog"><input type="checkbox" id="togCrit"> Só caminho crítico</label>
+      <label class="tog"><input type="checkbox" id="togRefs" checked> Datas de referência</label>
+    </div>
+  </div>
+  <p class="hint" id="hint"></p>
+
+  <div class="chartwrap"><svg id="chart" role="img" aria-label="Cronograma por estrato"></svg></div>
+  <div class="legend" id="legend1">
+    <span><i class="dia" style="background:var(--teal)"></i> Marco de obra — concluído</span>
+    <span><i class="dia hollow"></i> Marco de obra — previsto</span>
+    <span><i class="dia" style="background:var(--crit)"></i> Marco no caminho crítico (folga zero)</span>
+    <span><i class="dia" style="background:var(--cli)"></i> <span id="legCli">Marco / janela do cliente</span></span>
+    <span><i class="dia hollow" style="border-color:var(--base)"></i> Data da linha de base</span>
+    <span><i class="sw" style="background:var(--teal)"></i> Barra: avanço do estrato/disciplina</span>
+    <span id="legRefs">│ Data de status · ┆ referências</span>
+  </div>
+  <div class="legend" id="legend2" hidden></div>
+
+  <details class="tbl" id="tblwrap">
+    <summary>Tabela de marcos (visão acessível / impressão)</summary>
+    <div id="tbl"></div>
+  </details>
+
+  <div class="notes" id="notes"></div>
+</main>
+<div class="tip" id="tip"></div>
+
+<script>
+const META = __META__;
+const DATA = __DATA__;
+const MS = __MS__;
+const VER = __VER__;
+
+// ---------- derived constants
+const FLOORS = META.estratos.map(e=>e.id);
+const ENAME = Object.fromEntries(META.estratos.map(e=>[e.id, e.nome]));
+const ESHORT = Object.fromEntries(META.estratos.map(e=>[e.id, e.curto||e.id]));
+const UNID = META.unidade || "estrato";
+const CLI = META.rotulo_cliente || "Cliente";
+const VERS = (META.versoes||[]);
+const VKEYS = VERS.map(v=>v.key);
+const CUR = VKEYS[VKEYS.length-1];
+const VLAB = Object.fromEntries(VERS.map(v=>[v.key, v.rotulo]));
+const VSTAT = Object.fromEntries(VERS.map(v=>[v.key, v.status]));
+const HAS_VER = !!(VER && VER.floors && VKEYS.length>=2);
+const REFS = META.referencias || [];
+const SHORT = META.rotulos_curtos || {};
+
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const D = s => new Date(s+"T00:00:00");
+const fmt = s => { if(!s) return "—"; const [y,m,d]=s.split("-"); return `${d}/${m}`; };
+const fmtFull = s => { if(!s) return "—"; const [y,m,d]=s.split("-"); return `${d}/${m}/${y}`; };
+const days = (a,b) => Math.round((D(b)-D(a))/86400000);
+const slackTxt = s => (s||"—").replace(".0d"," d");
+const state = {view:"marcos", floor:"all", win:"focus", base:true, cli:true, crit:false, refs:true};
+
+// ---------- static texts from META
+document.title = META.titulo;
+document.getElementById("titulo").textContent = META.titulo;
+document.getElementById("subtitulo").textContent = META.subtitulo||"";
+document.getElementById("estratoLabel").textContent = META.unidade_plural ? META.unidade_plural.charAt(0).toUpperCase()+META.unidade_plural.slice(1) : "Estrato";
+document.getElementById("togCliLabel").textContent = `Marcos ${CLI}`;
+document.getElementById("legCli").textContent = `Marco / janela ${CLI}`;
+document.getElementById("legRefs").textContent = `│ Data de status ${fmt(META.data_status)} · ┆ referências`;
+document.getElementById("btnFoco").textContent = META.rotulo_foco || "Foco";
+document.getElementById("btnFull").textContent = META.rotulo_full || "Obra completa";
+document.getElementById("btnComparativo").textContent = `Comparativo entre ${META.unidade_plural||"estratos"}`;
+if(HAS_VER) document.getElementById("btnConfronto").textContent = `Confronto ${VERS.map(v=>v.rotulo).join(" × ")}`;
+else document.getElementById("btnConfronto").hidden = true;
+{
+  const g=document.getElementById("estratoGroup");
+  for(const e of META.estratos){ const b=document.createElement("button"); b.className="chip"; b.dataset.floor=e.id; b.setAttribute("aria-pressed","false"); b.textContent=e.id; g.appendChild(b); }
+  const n=document.getElementById("notes"); n.innerHTML = (META.notas||[]).map(p=>`<p>${p}</p>`).join("") + (META.rodape?`<p>${META.rodape}</p>`:"");
+  if(HAS_VER){
+    const l2=document.getElementById("legend2"); let h="";
+    VERS.forEach((v,i)=>{
+      const sym = i===0 ? '<i class="dot hollow"></i>' : i===VERS.length-1 ? '<i class="dia hollow"></i>' : `<i class="dot" style="background:var(${VERS.length>3&&i===1?"--base":"--amber"})"></i>`;
+      h+=`<span>${sym} ${v.rotulo} (status ${v.status}${v.salvo?`, salvo ${v.salvo}`:""})${i===VERS.length-1?" — plano vigente":""}</span>`;
+    });
+    h+=`<span><i class="dia" style="background:var(--crit)"></i> crítico na versão vigente</span><span><i class="dia" style="background:var(--cli)"></i> marco ${CLI}</span><span><i class="sw" style="background:var(--ink-3);height:2px"></i> trajetória do marco entre versões (para a direita = postergação)</span><span><b style="color:var(--crit)">+n d</b> postergado · <b style="color:var(--teal-dark)">−n d</b> antecipado</span>`;
+    l2.innerHTML=h;
+  }
+}
+
+const svg = document.getElementById("chart");
+const tip = document.getElementById("tip");
+const NS = "http://www.w3.org/2000/svg";
+function el(n, attrs={}, parent=svg){ const e=document.createElementNS(NS,n); for(const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; }
+function txt(x,y,s,attrs={},parent=svg){ const t=el("text",Object.assign({x,y},attrs),parent); t.textContent=s; return t; }
+function showTip(evt, html){ tip.innerHTML=html; tip.style.opacity=1; moveTip(evt); }
+function moveTip(evt){ const w=tip.offsetWidth, h=tip.offsetHeight; let x=evt.clientX+14, y=evt.clientY+14; if(x+w>window.innerWidth-8) x=evt.clientX-w-14; if(y+h>window.innerHeight-8) y=evt.clientY-h-14; tip.style.left=x+"px"; tip.style.top=y+"px"; }
+function hideTip(){ tip.style.opacity=0; }
+function hover(node, htmlFn){ node.addEventListener("mouseenter",e=>showTip(e,htmlFn())); node.addEventListener("mousemove",moveTip); node.addEventListener("mouseleave",hideTip); }
+function diamond(parent, cx, cy, r, fill, stroke, sw=2){ return el("polygon",{points:`${cx},${cy-r} ${cx+r},${cy} ${cx},${cy+r} ${cx-r},${cy}`,fill,stroke,"stroke-width":sw},parent); }
+
+const cliItems = f => (DATA.cliente && DATA.cliente[f] || []).filter(i=>!i.summary && i.level>=4);
+
+// unified milestone list per stratum: obra + cliente, chronological
+function floorItems(f){
+  let items=[];
+  let ms=(MS[f]||[]).slice(); if(state.crit) ms=ms.filter(m=>m.crit);
+  for(const m of ms) items.push({kind:"obra", name:SHORT[m.label]||m.label, task:m.task, start:m.start, end:m.date, bl:m.bl, pct:m.pct, crit:m.crit, slack:m.slack});
+  if(state.cli && !state.crit){
+    for(const it of cliItems(f))
+      items.push({kind:"cli", name:it.name, start:it.start, end:it.finish, bl:"", pct:null, crit:false, slack:it.slack, range: it.start!==it.finish});
+  }
+  items.sort((a,b)=> a.end<b.end?-1 : a.end>b.end?1 : (a.kind==="obra"?-1:1));
+  return items;
+}
+
+// items for the version confrontation
+function versionItems(f){
+  const F=VER.floors[f]; const items=[];
+  for(const m of F.milestones){
+    if(state.crit && !m.crit_cur) continue;
+    items.push({kind:"obra", name:SHORT[m.label]||m.label, task:m.task, crit:m.crit_cur, v:m.v});
+  }
+  if(state.cli && !state.crit){
+    const names=[];
+    for(const k of VKEYS.slice().reverse()) for(const it of (F.cliente&&F.cliente[k]||[])) if(!it.summary && it.level>=4 && !names.includes(it.name)) names.push(it.name);
+    for(const n of names){
+      const v={};
+      for(const k of VKEYS){ const it=(F.cliente&&F.cliente[k]||[]).find(i=>i.name===n && !i.summary); v[k]= it ? {date:it.finish, start:it.start, pct:null, slack:it.slack, range:it.start!==it.finish} : null; }
+      items.push({kind:"cli", name:n, task:n, crit:false, v});
+    }
+  }
+  const key = it => { for(const k of VKEYS.slice().reverse()){ if(it.v[k]&&it.v[k].date) return it.v[k].date; } return "2099"; };
+  items.sort((a,b)=> key(a)<key(b)?-1 : key(a)>key(b)?1 : (a.kind==="obra"?-1:1));
+  return items;
+}
+const vdays = (a,b) => (a&&b&&a.date&&b.date) ? days(a.date,b.date) : null;
+
+function render(){
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  const W = Math.max(1000, svg.parentElement.clientWidth - 16);
+  const isMs = state.view==="marcos" || state.view==="comparativo";
+  const isVer = state.view==="confronto" && HAS_VER;
+  const E = META.eixo;
+  const T0 = state.win==="focus" ? (isVer ? D(E.foco_confronto||E.foco_marcos||E.inicio) : isMs ? D(E.foco_marcos||E.inicio) : D(E.inicio)) : D(E.inicio);
+  const T1 = D(E.fim);
+  const nV = VKEYS.length;
+  const COLW = isVer ? VKEYS.map(()=>58).concat(VKEYS.slice(0,-1).map(()=>68)) : [];
+  const RIGHT = isVer ? COLW.reduce((a,b)=>a+b,0)+16 : 30;
+  const LEFT = state.view==="marcos" ? 330 : (state.view==="comparativo"||isVer) ? 300 : 250, TOP = 90;
+  const plotW = W - LEFT - RIGHT;
+  const x = d => LEFT + plotW * ((D(d) - T0) / (T1 - T0));
+  const floors = state.floor==="all" ? FLOORS : [state.floor];
+  const ink=css("--ink"), ink2=css("--ink-2"), ink3=css("--ink-3"), grid=css("--grid"), line=css("--line"), band=css("--band");
+  const teal=css("--teal"), tealD=css("--teal-dark"), crit=css("--crit"), cli=css("--cli"), base=css("--base"), panel=css("--panel"), tealSoft=css("--teal-soft"), critSoft=css("--crit-soft"), amber=css("--amber");
+  const curLab = VLAB[CUR] || "plano atual";
+  document.getElementById("hint").textContent = state.view==="marcos"
+    ? `Cada linha é um marco; o losango marca a data de término no plano atual (${curLab}) e o losango cinza vazado, a data da linha de base. Passe o mouse para detalhes.`
+    : isVer ? `Cada linha é um marco; os símbolos mostram a data de término prevista para ele em cada versão do cronograma (${VERS.map(v=>v.rotulo).join(", ")}), ligados pela trajetória. As colunas à direita trazem as datas e o deslocamento em dias. Passe o mouse para detalhes.`
+    : state.view==="comparativo" ? `Cada linha é um tipo de marco; os círculos mostram em que data cada ${UNID} atinge esse marco.`
+    : state.view==="disciplinas" ? "Barras por disciplina e estrato: cor clara = duração planejada; cor cheia = avanço realizado; traço cinza = linha de base."
+    : "Tarefas-folha do caminho crítico (folga zero) por estrato, na ordem de execução.";
+  document.getElementById("callout").innerHTML = isVer ? (META.leitura_confronto||META.leitura||"") : (META.leitura||"");
+  document.getElementById("legend1").hidden = isVer; document.getElementById("legend2").hidden = !isVer;
+  document.getElementById("togBase").parentElement.style.display = isVer ? "none" : "";
+
+  const colX=[]; if(isVer){ let cx=W-RIGHT+8; for(const w of COLW){ colX.push(cx+w/2); cx+=w; } }
+
+  // ---- layout
+  const rows=[]; let y=TOP;
+  const RH = 24, FH = 46, VH = 26;
+  if(state.view==="marcos"){
+    for(const f of floors){
+      rows.push({type:"fhead", floor:f, y, h:FH}); y+=FH;
+      const items=floorItems(f);
+      items.forEach((it,i)=>{ rows.push({type:"ms", floor:f, item:it, y, h:RH, i}); y+=RH; });
+      y+=16;
+    }
+  } else if(isVer){
+    for(const f of floors){
+      rows.push({type:"vhead", floor:f, y, h:56}); y+=56;
+      const items=versionItems(f);
+      items.forEach((it,i)=>{ rows.push({type:"vms", floor:f, item:it, y, h:VH, i}); y+=VH; });
+      y+=16;
+    }
+  } else if(state.view==="comparativo"){
+    const types=[]; const seen=new Set();
+    for(const f of FLOORS) for(const m of (MS[f]||[])){ if(state.crit && !m.crit) continue; const n=SHORT[m.label]||m.label; if(!seen.has(n)){ seen.add(n); types.push({name:n, kind:"obra"}); } }
+    if(state.cli && !state.crit){ for(const f of FLOORS) for(const it of cliItems(f)){ if(!seen.has(it.name)){ seen.add(it.name); types.push({name:it.name, kind:"cli"}); } } }
+    const med = t => { const ds=[]; for(const f of FLOORS){ if(t.kind==="obra"){ const m=(MS[f]||[]).find(m=>(SHORT[m.label]||m.label)===t.name); if(m) ds.push(m.date);} else { const it=cliItems(f).find(i=>i.name===t.name); if(it) ds.push(it.finish);} } ds.sort(); return ds[Math.floor(ds.length/2)]||"2099"; };
+    types.sort((a,b)=> med(a)<med(b)?-1:1);
+    rows.push({type:"chead", y, h:30}); y+=30;
+    types.forEach((t,i)=>{ rows.push({type:"cmp", item:t, y, h:28, i}); y+=28; });
+  } else if(state.view==="disciplinas"){
+    for(const f of floors){
+      rows.push({type:"head", floor:f, y, h:30}); y+=30;
+      let gs = DATA.floors[f].groups; if(state.crit) gs = gs.filter(g=>g.crit);
+      for(const g of gs){ rows.push({type:"bar", floor:f, item:g, y, h:22}); y+=22; }
+      if(state.cli && cliItems(f).length){ rows.push({type:"dp", floor:f, y, h:34}); y+=34; }
+      y+=12;
+    }
+  } else {
+    for(const f of floors){
+      rows.push({type:"head", floor:f, y, h:30}); y+=30;
+      for(const t of DATA.critical[f]||[]){ rows.push({type:"bar", floor:f, item:Object.assign({},t,{crit:true,slack:"0.0d"}), y, h:22, leaf:true}); y+=22; }
+      if(!(DATA.critical[f]||[]).length){ rows.push({type:"empty", floor:f, y, h:22}); y+=22; }
+      y+=12;
+    }
+  }
+  const H = y + 16;
+  svg.setAttribute("width", W); svg.setAttribute("height", H); svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+  // ---- row bands first (behind)
+  rows.forEach(r=>{ if((r.type==="ms"||r.type==="cmp"||r.type==="vms") && r.i%2===1) el("rect",{x:0,y:r.y,width:W,height:r.h,fill:band}); });
+  if(isVer){
+    const bx = W-RIGHT+4;
+    el("line",{x1:bx,y1:TOP-34,x2:bx,y2:H-10,stroke:line,"stroke-width":1.2});
+    const heads = VERS.map(v=>[v.rotulo, `status ${v.status}`]).concat(VKEYS.slice(0,-1).map(k=>[`Δ ${VLAB[k].replace(/^\D+/,"")||VLAB[k]}→${(VLAB[CUR]||"").replace(/^\D+/,"")||VLAB[CUR]}`,"dias"]));
+    heads.forEach((h,i)=>{ txt(colX[i], TOP-17, h[0], {fill: i===nV-1?ink:ink2,"font-size":12,"font-weight":700,"text-anchor":"middle"}); txt(colX[i], TOP-5, h[1], {fill:ink3,"font-size":9.5,"text-anchor":"middle"}); });
+  }
+
+  // ---- time axis
+  const mn = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  const months=[]; for(let m=new Date(T0.getFullYear(),T0.getMonth(),1); m<T1; m.setMonth(m.getMonth()+1)) months.push(new Date(m));
+  for(const m of months){
+    const d0 = m<T0?T0:m; const xs = x(d0.toISOString().slice(0,10));
+    const next = new Date(m.getFullYear(), m.getMonth()+1, 1); const xe = x((next<T1?next:T1).toISOString().slice(0,10));
+    el("line",{x1:xs,y1:TOP-30,x2:xs,y2:H-10,stroke:line,"stroke-width":1.2});
+    if(xe-xs>60) txt(xs+6, TOP-16, mn[m.getMonth()]+"/"+String(m.getFullYear()).slice(2), {fill:ink2,"font-size":12.5,"font-weight":700});
+  }
+  const spanDays=(T1-T0)/86400000;
+  const weekly = spanDays <= 110;
+  const stepDays = spanDays > 400 ? 28 : 7;
+  const pxStep = plotW*stepDays/spanDays; const every = pxStep < (weekly?36:22) ? 2 : 1; let wi=0;
+  for(let d=D(E.inicio); d<T1; d.setDate(d.getDate()+stepDays)){
+    if(d<T0) continue;
+    const xs=x(d.toISOString().slice(0,10));
+    el("line",{x1:xs,y1:TOP-4,x2:xs,y2:H-10,stroke:grid,"stroke-width":1});
+    if((wi++)%every===0) txt(xs+2, TOP-3, weekly?`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}`:String(d.getDate()).padStart(2,"0"), {fill:ink3,"font-size":weekly?10:9});
+  }
+  el("line",{x1:LEFT,y1:TOP-30,x2:W-RIGHT,y2:TOP-30,stroke:line});
+
+  // ---- reference lines
+  if(state.refs){
+    let refs = REFS.slice();
+    if(isVer){
+      refs = VERS.slice(0,-1).map(v=>({d:v.data_status,label:`status ${v.rotulo} · ${v.status}`,kind:"vstatus",lvl:1})).concat(refs.map(r=> r.kind==="status"?Object.assign({},r,{label:`status ${VLAB[CUR]} · ${fmt(r.d)}`}):r));
+    }
+    for(const r of refs){
+      if(!r.d || D(r.d)<T0 || D(r.d)>T1) continue;
+      const xs=x(r.d);
+      if(r.kind==="vstatus"){
+        el("line",{x1:xs,y1:TOP-34,x2:xs,y2:H-10,stroke:ink3,"stroke-width":1.1,"stroke-dasharray":"1.5 3"});
+        txt(xs, TOP-44-(r.lvl||0)*11, r.label, {fill:ink3,"font-size":10,"text-anchor":"start",dx:4,"font-weight":600});
+        continue;
+      }
+      const col = r.kind==="status"?ink : r.kind==="end"?crit : r.kind==="base"?base : css("--amber");
+      el("line",{x1:xs,y1:TOP-34,x2:xs,y2:H-10,stroke:col,"stroke-width":r.kind==="status"?1.6:1.2,"stroke-dasharray":r.kind==="status"?"":(r.kind==="base"?"2 3":"5 4")});
+      const ly = TOP-44-(r.lvl||0)*11;
+      txt(xs, ly, r.label, {fill:col,"font-size":10,"text-anchor": r.kind==="status"?"start":"end", dx: r.kind==="status"?4:-4, "font-weight":600});
+    }
+  }
+
+  function drawBar(item, yb, hb, opts={}){
+    const isCrit = !!item.crit; const col = isCrit?crit:teal;
+    if(state.base && item.bl_start && item.bl_finish && D(item.bl_finish)>=T0){
+      const bx0=Math.max(LEFT,x(item.bl_start));
+      el("rect",{x:bx0, y:yb+hb-4, width:Math.max(2,x(item.bl_finish)-bx0), height:3, rx:1.5, fill:base, opacity:.9});
+    }
+    const x0=Math.max(LEFT,x(item.start)), x1=Math.max(x0+3, x(item.finish));
+    const g = el("g",{});
+    el("rect",{x:x0,y:yb,width:x1-x0,height:hb-6,rx:3,fill:col,opacity:.35},g);
+    const pct = Math.max(0,Math.min(100,parseFloat(item.pct||0)));
+    const fx0=x(item.start), fx1=x(item.finish); const px=fx0+(fx1-fx0)*pct/100;
+    if(px>x0) el("rect",{x:x0,y:yb,width:px-x0,height:hb-6,rx:3,fill:isCrit?crit:tealD,opacity:.95},g);
+    el("rect",{x:x0-4,y:yb-3,width:x1-x0+8,height:hb+2,fill:"transparent"},g);
+    if(opts.label!==false) txt(x1+5, yb+hb-9, `${Math.round(pct)}%`, {fill:ink2,"font-size":10.5});
+    hover(g, ()=>`<b>${item.name}</b><br><span class="m">${opts.floor||""}</span><br>Atual: ${fmtFull(item.start)} → ${fmtFull(item.finish)}${item.dur?` (${item.dur.replace(".0d"," d")})`:""}<br>${item.bl_start?`Baseline: ${fmtFull(item.bl_start)} → ${fmtFull(item.bl_finish)} · variação término: ${days(item.bl_finish,item.finish)>0?"+":""}${days(item.bl_finish,item.finish)} d<br>`:""}Realizado: ${Math.round(pct)}%${item.prev?` · previsto (construtora): ${item.prev}`:""}<br>Folga total: ${slackTxt(item.slack)}${isCrit?" · <b>crítico</b>":""}`);
+    return g;
+  }
+
+  // ---- rows
+  for(const r of rows){
+    if(r.type==="fhead"){
+      const f=DATA.floors[r.floor]; const isCritF=f.slack==="0.0d";
+      el("rect",{x:0,y:r.y,width:W,height:r.h-2,fill:tealSoft});
+      txt(10, r.y+19, ENAME[r.floor], {fill:ink,"font-size":15,"font-weight":700});
+      const nameW = 10 + ENAME[r.floor].length*8.4 + 12;
+      const termTxt = `término ${fmtFull(f.finish)} · folga ${slackTxt(f.slack)}`;
+      if(nameW + 185 <= LEFT){
+        txt(Math.max(122,nameW), r.y+19, termTxt, {fill:isCritF?crit:ink2,"font-size":11.5,"font-weight":700});
+        txt(10, r.y+36, `${f.prev?`previsto ${f.prev} · `:""}${f.real?`realizado ${f.real} · `:""}linha de base ${fmtFull(f.bl_finish)}`, {fill:ink3,"font-size":10.5});
+      } else {
+        txt(10, r.y+36, `${termTxt} · base ${fmt(f.bl_finish)}${f.prev?` · prev. ${f.prev}`:""}${f.real?` / real. ${f.real}`:""}`, {fill:isCritF?crit:ink2,"font-size":10.5,"font-weight":700});
+      }
+      const fstart = f.groups.reduce((a,g)=>a<g.start?a:g.start, "2099-01-01");
+      const bx0=Math.max(LEFT+2, x(fstart)), bx1=x(f.finish);
+      const gb=el("g",{});
+      el("rect",{x:bx0,y:r.y+16,width:Math.max(4,bx1-bx0),height:12,rx:3,fill:isCritF?crit:teal,opacity:.22},gb);
+      const pct=parseFloat(f.pct||0); const fx0=x(fstart), px=fx0+(x(f.finish)-fx0)*pct/100;
+      if(px>bx0) el("rect",{x:bx0,y:r.y+16,width:px-bx0,height:12,rx:3,fill:isCritF?crit:tealD,opacity:.9},gb);
+      if(bx1-bx0>220) txt(bx0+6, r.y+26, `avanço da obra — ${ENAME[r.floor]} (MPP ${Math.round(pct)}%)`, {fill:ink,"font-size":9.5,"font-weight":600,"paint-order":"stroke",stroke:panel,"stroke-width":3,"stroke-linejoin":"round",opacity:.9},gb);
+      hover(gb, ()=>`<b>${ENAME[r.floor]} — obra</b><br>Início ${fmtFull(fstart)} → término ${fmtFull(f.finish)} (baseline ${fmtFull(f.bl_finish)})<br>${f.prev?`Previsto ${f.prev} · `:""}${f.real?`realizado ${f.real} · `:""}% concluído MPP ${Math.round(pct)}%<br>Folga total ${slackTxt(f.slack)}`);
+    }
+    if(r.type==="ms"){
+      const it=r.item; const cy=r.y+r.h/2;
+      const col = it.kind==="cli"?cli : it.crit?crit:teal;
+      const g=el("g",{});
+      el("rect",{x:8,y:cy-6,width:5,height:12,rx:1,fill:col},g);
+      const name = it.name.length>44 ? it.name.slice(0,43)+"…" : it.name;
+      txt(20, cy+4, name, {fill:it.kind==="cli"?cli:ink,"font-size":12,"font-weight":it.crit?700:400},g);
+      if(it.kind==="cli") txt(LEFT-8, cy+4, CLI, {fill:cli,"font-size":9.5,"text-anchor":"end","font-style":"italic"},g);
+      else if(it.crit) txt(LEFT-8, cy+4, "crítico", {fill:crit,"font-size":9.5,"text-anchor":"end","font-style":"italic"},g);
+      el("line",{x1:LEFT,y1:cy,x2:W-RIGHT,y2:cy,stroke:grid,"stroke-width":1},g);
+      if(state.base && it.bl && it.bl!==it.end && D(it.bl)>=T0 && D(it.bl)<=T1) diamond(g, x(it.bl), cy, 5, "none", base, 1.6);
+      let labelX;
+      if(D(it.end)<T0){ txt(LEFT+3, cy+3.5, "◀ "+fmt(it.end), {fill:ink3,"font-size":10},g); }
+      else if(it.kind==="cli" && it.range){
+        const x0=Math.max(LEFT,x(it.start)), x1=x(it.end);
+        el("rect",{x:x0,y:cy-5,width:Math.max(6,x1-x0),height:10,rx:5,fill:cli,opacity:.85},g);
+        labelX=x1+8;
+        txt(labelX, cy+4, `${fmt(it.start)}–${fmt(it.end)}`, {fill:ink2,"font-size":11.5,"font-weight":600,"paint-order":"stroke",stroke:panel,"stroke-width":3.5,"stroke-linejoin":"round"},g);
+      } else {
+        const cx=x(it.end);
+        if(it.kind==="cli") diamond(g, cx, cy, 7, cli, panel, 1.5);
+        else diamond(g, cx, cy, 7, it.pct>=100?col:panel, col, 2.2);
+        labelX=cx+11;
+        let lab=fmt(it.end);
+        if(state.base && it.bl){ const dd=days(it.bl,it.end); if(dd!==0) lab += `  (${dd>0?"+":""}${dd} d vs base)`; }
+        txt(labelX, cy+4, lab, {fill:ink2,"font-size":11.5,"font-weight":600,"paint-order":"stroke",stroke:panel,"stroke-width":3.5,"stroke-linejoin":"round"},g);
+      }
+      el("rect",{x:0,y:r.y,width:W,height:r.h,fill:"transparent"},g);
+      hover(g, ()=> it.kind==="cli"
+        ? `<b>${it.name}</b><br><span class="m">${ENAME[r.floor]} · marco ${CLI}${META.descricao_cliente?` (${META.descricao_cliente})`:""}</span><br>${it.range?fmtFull(it.start)+" → "+fmtFull(it.end):fmtFull(it.end)}<br>Folga total: ${slackTxt(it.slack)}`
+        : `<b>${it.name}</b><br><span class="m">${ENAME[r.floor]} · tarefa: ${it.task}</span><br>Término atual: ${fmtFull(it.end)}${it.bl?` · baseline: ${fmtFull(it.bl)} (${days(it.bl,it.end)>0?"+":""}${days(it.bl,it.end)} d)`:""}<br>Realizado: ${Math.round(it.pct)}% · folga: ${slackTxt(it.slack)}${it.crit?" · <b>crítico</b>":""}`);
+    }
+    if(r.type==="vhead"){
+      const F=VER.floors[r.floor]; const S=F.summary; const s0=S[VKEYS[0]], sc=S[CUR];
+      const isCritF = sc && sc.slack==="0.0d";
+      el("rect",{x:0,y:r.y,width:W,height:r.h-2,fill:tealSoft});
+      txt(10, r.y+18, ENAME[r.floor], {fill:ink,"font-size":15,"font-weight":700});
+      const same = VKEYS.every(k=>S[k] && S[k].finish===sc.finish);
+      const nameW = 10 + ENAME[r.floor].length*8.4 + 12;
+      const termTxt = `término ${fmt(sc.finish)} · folga ${slackTxt(sc.slack)}`;
+      const sameTxt = same ? `entrega igual nas ${nV} versões` : `entrega: `+VKEYS.map(k=>`${VLAB[k]} ${S[k]?fmt(S[k].finish):"—"}`).join(" · ");
+      const p = v => v?`${Math.round(parseFloat(v.pct||0))}%`:"—";
+      const q = v => v&&v.prev?(v.prev||"").trim():"—";
+      if(nameW + 160 <= LEFT){
+        txt(Math.max(122,nameW), r.y+18, termTxt, {fill:isCritF?crit:ink2,"font-size":11.5,"font-weight":700});
+        txt(10, r.y+33, sameTxt, {fill:ink3,"font-size":10.5});
+      } else {
+        txt(10, r.y+33, `${termTxt} · ${sameTxt}`, {fill:isCritF?crit:ink2,"font-size":10.5,"font-weight":700});
+      }
+      const hasPrev = VKEYS.some(k=>S[k]&&S[k].prev);
+      txt(10, r.y+47, `% MPP ${VKEYS.map(k=>p(S[k])).join(" → ")}${hasPrev?`  ·  prev. construtora ${VKEYS.map(k=>q(S[k])).join(" → ")}`:""}`, {fill:ink3,"font-size":10.5});
+      const gb=el("g",{});
+      const BH=34, BY=r.y+9;
+      for(const v of VERS){
+        const s=S[v.key]; if(!s || !v.data_status || D(v.data_status)<T0) continue;
+        const cx=x(v.data_status); const pr=parseFloat((s.prev||"0").replace("%",""))||0, re=parseFloat(s.pct||0);
+        if(hasPrev){ el("rect",{x:cx-9,y:BY,width:8,height:BH,fill:base,opacity:.3},gb); el("rect",{x:cx-9,y:BY+BH-BH*pr/100,width:8,height:BH*pr/100,fill:base,opacity:.9},gb); }
+        el("rect",{x:cx+1,y:BY,width:8,height:BH,fill:isCritF?crit:teal,opacity:.22},gb);
+        el("rect",{x:cx+1,y:BY+BH-BH*re/100,width:8,height:BH*re/100,fill:isCritF?crit:teal,opacity:.95},gb);
+        txt(cx+12, BY+13, `${Math.round(re)}%`, {fill:ink,"font-size":10,"font-weight":700},gb);
+        if(hasPrev) txt(cx+12, BY+25, `prev ${q(s)}`, {fill:ink3,"font-size":9},gb);
+      }
+      hover(gb, ()=>`<b>${ENAME[r.floor]} — avanço na data de status de cada versão</b><br>`+VERS.map(v=>{const s=S[v.key]; return `${v.rotulo} (${v.status}): MPP ${p(s)}${s&&s.prev?` · previsto ${q(s)}`:""}${s&&s.real?` · realizado ${(s.real||"").trim()}`:""}`;}).join("<br>")+`<br><span class="m">barra cinza = previsto da construtora · barra colorida = % concluído no MPP</span>`);
+      txt(colX[0]-COLW[0]/2, r.y+18, `entrega — ${UNID}`, {fill:ink3,"font-size":9.5,"font-style":"italic"});
+      VKEYS.forEach((k,i)=>{ const v=S[k]; txt(colX[i], r.y+36, v?fmt(v.finish):"—", {fill: k===CUR?ink:ink2,"font-size":11.5,"font-weight":700,"text-anchor":"middle"}); });
+      VKEYS.slice(0,-1).forEach((k,j)=>{ const dd=S[k]&&sc?days(S[k].finish,sc.finish):null; txt(colX[nV+j], r.y+36, dd===null?"—":(dd>0?"+":"")+dd+" d", {fill: dd>0?crit: dd<0?tealD: ink3,"font-size":11,"font-weight":700,"text-anchor":"middle"}); });
+    }
+    if(r.type==="vms"){
+      const it=r.item; const cy=r.y+r.h/2;
+      const col = it.kind==="cli"?cli : it.crit?crit:teal;
+      const g=el("g",{});
+      el("rect",{x:8,y:cy-6,width:5,height:12,rx:1,fill:col},g);
+      const name = it.name.length>40 ? it.name.slice(0,39)+"…" : it.name;
+      txt(20, cy+4, name, {fill:it.kind==="cli"?cli:ink,"font-size":12,"font-weight":it.crit?700:400},g);
+      if(it.kind==="cli") txt(LEFT-8, cy+4, CLI, {fill:cli,"font-size":9.5,"text-anchor":"end","font-style":"italic"},g);
+      else if(it.crit) txt(LEFT-8, cy+4, "crítico", {fill:crit,"font-size":9.5,"text-anchor":"end","font-style":"italic"},g);
+      el("line",{x1:LEFT,y1:cy,x2:W-RIGHT,y2:cy,stroke:grid,"stroke-width":1},g);
+      const step = nV>2 ? 10/(nV-1) : 6;
+      const pts = VKEYS.map((k,i)=>{ const v=it.v[k]; return (v&&v.date) ? {k,i,d:v.date,px:x(v.date),py:cy+(i-(nV-1)/2)*step,v} : null; }).filter(Boolean);
+      if(pts.length>1 && pts.some(p=>p.d!==pts[0].d)) el("polyline",{points:pts.map(p=>`${Math.min(W-RIGHT,Math.max(LEFT,p.px))},${p.py}`).join(" "),fill:"none",stroke:ink3,"stroke-width":1.4,opacity:.85,"stroke-linejoin":"round"},g);
+      for(const p of pts){
+        if(p.px<LEFT){ txt(LEFT+3, p.py+3.5, "◀", {fill:ink3,"font-size":8},g); continue; }
+        if(p.px>W-RIGHT) continue;
+        if(p.i===0) el("circle",{cx:p.px,cy:p.py,r:4.6,fill:panel,stroke:base,"stroke-width":1.9},g);
+        else if(p.i<nV-1) el("circle",{cx:p.px,cy:p.py,r:4.6,fill:(nV>3&&p.i===1)?base:amber,stroke:panel,"stroke-width":1.2},g);
+        else if(it.kind==="cli") diamond(g, p.px, p.py, 6.5, cli, panel, 1.5);
+        else diamond(g, p.px, p.py, 6.5, (p.v.pct>=100)?col:panel, col, 2.2);
+      }
+      VKEYS.forEach((k,i)=>{ const v=it.v[k]; txt(colX[i], cy+4, v&&v.date?fmt(v.date):"—", {fill: k===CUR?ink:ink2,"font-size":11.5,"font-weight":k===CUR?700:400,"text-anchor":"middle","font-variant-numeric":"tabular-nums"},g); });
+      VKEYS.slice(0,-1).forEach((k,j)=>{
+        const dd=vdays(it.v[k],it.v[CUR]); const cx=colX[nV+j];
+        if(dd===null){ txt(cx, cy+4, "—", {fill:ink3,"font-size":11,"text-anchor":"middle"},g); return; }
+        if(dd!==0) el("rect",{x:cx-25,y:cy-8.5,width:50,height:17,rx:8.5,fill: dd>0?critSoft:tealSoft},g);
+        txt(cx, cy+4, (dd>0?"+":dd<0?"−":"")+Math.abs(dd)+" d", {fill: dd>0?crit: dd<0?tealD: ink3,"font-size":11,"font-weight":700,"text-anchor":"middle"},g);
+      });
+      el("rect",{x:0,y:r.y,width:W,height:r.h,fill:"transparent"},g);
+      hover(g, ()=>{
+        const L = VKEYS.map(k=>{ const v=it.v[k]; return `${VLAB[k]} (status ${VSTAT[k]}): ${v&&v.date? (v.range?fmtFull(v.start)+" → ":"")+fmtFull(v.date) : "não consta"}${v&&v.pct!==null&&v.pct!==undefined?` · ${Math.round(v.pct)}% na data de status`:""}`; }).join("<br>");
+        const dl = VKEYS.slice(0,-1).map(k=>{ const dd=vdays(it.v[k],it.v[CUR]); return `Δ ${VLAB[k]}→${VLAB[CUR]}: ${dd===null?"—":(dd>0?"+":"")+dd+" d"}`; }).join(" · ");
+        return `<b>${it.name}</b><br><span class="m">${ENAME[r.floor]} · ${it.kind==="cli"?`marco ${CLI}`:"tarefa: "+it.task}</span><br>${L}<br>${dl}${it.crit?` · <b>crítico na ${VLAB[CUR]}</b>`:""}`;
+      });
+    }
+    if(r.type==="chead"){
+      el("rect",{x:0,y:r.y,width:W,height:r.h-2,fill:tealSoft});
+      txt(10, r.y+20, "Marco", {fill:ink,"font-size":13,"font-weight":700});
+      txt(LEFT+6, r.y+20, `Data em que cada ${UNID} atinge o marco (círculo = ${UNID}) · vermelho = crítico · azul = ${CLI}`, {fill:ink2,"font-size":11.5});
+    }
+    if(r.type==="cmp"){
+      const t=r.item; const cy=r.y+r.h/2;
+      const g=el("g",{});
+      const name=t.name.length>42?t.name.slice(0,41)+"…":t.name;
+      txt(10, cy+4, name, {fill:t.kind==="cli"?cli:ink,"font-size":12,"font-weight":600},g);
+      el("line",{x1:LEFT,y1:cy,x2:W-RIGHT,y2:cy,stroke:grid,"stroke-width":1},g);
+      const pts=[];
+      for(const f of FLOORS){
+        let d=null, critF=false, isRange=false, s=null;
+        if(t.kind==="obra"){ const m=(MS[f]||[]).find(m=>(SHORT[m.label]||m.label)===t.name); if(m){ d=m.date; critF=m.crit; } }
+        else { const it=cliItems(f).find(i=>i.name===t.name); if(it){ d=it.finish; s=it.start; isRange=it.start!==it.finish; } }
+        if(!d || D(d)<T0 || D(d)>T1) continue;
+        pts.push({f,d,critF,isRange,s});
+      }
+      const byDate={}; pts.forEach(p=>{ (byDate[p.d]=byDate[p.d]||[]).push(p); });
+      let minX=Infinity, maxX=-Infinity;
+      for(const p of pts){
+        const cx=x(p.d); const idx=byDate[p.d].indexOf(p); const n=byDate[p.d].length;
+        const jitter = n>1 ? (idx-(n-1)/2)*17 : 0;
+        minX=Math.min(minX, p.isRange?Math.max(LEFT,x(p.s)):cx+jitter-9); maxX=Math.max(maxX, cx+jitter+9);
+        const col = t.kind==="cli"?cli : p.critF?crit:teal;
+        const gg=el("g",{},g);
+        if(p.isRange){ const x0=Math.max(LEFT,x(p.s)); el("rect",{x:x0,y:cy-1.5,width:Math.max(4,cx-x0),height:3,rx:1.5,fill:cli,opacity:.35},gg); }
+        const lab=String(ESHORT[p.f]); const rr = lab.length>2 ? 11 : 9;
+        el("circle",{cx:cx+jitter,cy,r:rr,fill:col,stroke:panel,"stroke-width":1.5},gg);
+        txt(cx+jitter, cy+3.5, lab, {fill:"#fff","font-size":lab.length>2?8.5:10,"font-weight":700,"text-anchor":"middle"},gg);
+        hover(gg, ()=>`<b>${t.name}</b><br><span class="m">${ENAME[p.f]}</span><br>${p.isRange?fmtFull(p.s)+" → ":""}${fmtFull(p.d)}${p.critF?" · <b>crítico</b>":""}`);
+      }
+      if(pts.length){
+        const ds=pts.map(p=>p.d).sort(); const first=ds[0], last=ds[ds.length-1];
+        txt(minX-6, cy+4, fmt(first), {fill:ink3,"font-size":10.5,"text-anchor":"end"},g);
+        if(last!==first) txt(maxX+6, cy+4, fmt(last), {fill:ink3,"font-size":10.5},g);
+      }
+    }
+    if(r.type==="head"){
+      const f=DATA.floors[r.floor];
+      el("rect",{x:0,y:r.y,width:W,height:r.h-4,fill:tealSoft,opacity:.8});
+      txt(10, r.y+19, ENAME[r.floor], {fill:ink,"font-size":14,"font-weight":700});
+      txt(LEFT+6, r.y+19, `término ${fmtFull(f.finish)} · baseline ${fmtFull(f.bl_finish)} · folga ${slackTxt(f.slack)}${f.prev?` · previsto ${f.prev}`:""}${f.real?` / realizado ${f.real}`:""}`, {fill:ink2,"font-size":11.5});
+    }
+    if(r.type==="empty"){ txt(10, r.y+15, "sem tarefas com folga zero neste estrato", {fill:ink3,"font-size":11.5,"font-style":"italic"}); }
+    if(r.type==="bar"){
+      const it=r.item; const nm=it.name;
+      txt(10, r.y+15, nm.length>36?nm.slice(0,35)+"…":nm, {fill:it.crit?crit:ink,"font-size":11.5,"font-weight":it.crit?700:400});
+      drawBar(it, r.y+3, r.h-4, {floor:ENAME[r.floor]});
+    }
+    if(r.type==="dp"){
+      txt(10, r.y+20, `Marcos ${CLI}`, {fill:cli,"font-size":11.5,"font-weight":700});
+      const items=cliItems(r.floor); const yb=r.y+8, hb=18;
+      for(const it of items){
+        if(D(it.finish)<T0) continue;
+        const g=el("g",{});
+        if(it.ms||it.start===it.finish){ diamond(g, x(it.finish), yb+hb/2, 6, cli, panel, 1.5); }
+        else el("rect",{x:Math.max(LEFT,x(it.start)),y:yb+hb/2-4,width:Math.max(4,x(it.finish)-Math.max(LEFT,x(it.start))),height:8,rx:4,fill:cli,opacity:.85},g);
+        el("rect",{x:Math.max(LEFT,x(it.start))-6,y:yb-2,width:Math.max(12,x(it.finish)-Math.max(LEFT,x(it.start))+12),height:hb+4,fill:"transparent"},g);
+        hover(g, ()=>`<b>${it.name}</b><br><span class="m">${ENAME[r.floor]} · marco ${CLI}</span><br>${it.start===it.finish?fmtFull(it.finish):fmtFull(it.start)+" → "+fmtFull(it.finish)}<br>Folga total: ${slackTxt(it.slack)}`);
+      }
+    }
+  }
+  renderKpis(isVer);
+  if(isVer) renderVersionTable(floors); else renderTable(floors);
+}
+
+function pill(dd){ if(dd===null||dd===undefined) return "—"; if(dd===0) return '<span class="pill zero">0</span>'; return `<span class="pill ${dd>0?"late":"early"}">${dd>0?"+":"−"}${Math.abs(dd)} d</span>`; }
+function renderVersionTable(floors){
+  const box=document.getElementById("tbl"); let h="";
+  const nV=VKEYS.length;
+  for(const f of floors){
+    const F=VER.floors[f]; const S=F.summary; const sc=S[CUR];
+    const p = v => v?`${Math.round(parseFloat(v.pct||0))}%`:"—", q = v => v&&v.prev?(v.prev||"").trim():"—";
+    const hasPrev = VKEYS.some(k=>S[k]&&S[k].prev);
+    h+=`<h4 style="margin:12px 0 4px;color:var(--teal-dark)">${ENAME[f]} — entrega ${fmtFull(sc.finish)} (${VKEYS.slice(0,-1).map(k=>`${VLAB[k]} ${S[k]?fmt(S[k].finish):"—"}`).join(" · ")}) · % MPP ${VKEYS.map(k=>p(S[k])).join(" → ")}${hasPrev?` · previsto construtora ${VKEYS.map(k=>q(S[k])).join(" → ")}`:""}</h4>`;
+    h+=`<h5 class="sub">Marcos (término previsto em cada versão)</h5>`;
+    h+=`<table><thead><tr><th>Marco</th><th>Tipo</th>${VERS.map(v=>`<th class="num">${v.rotulo}<br><small>status ${v.status}</small></th>`).join("")}${VKEYS.slice(0,-1).map(k=>`<th class="num">Δ ${VLAB[k]}→${VLAB[CUR]}</th>`).join("")}<th class="num">% real. ${VKEYS.map(k=>VLAB[k]).join(" / ")}</th></tr></thead><tbody>`;
+    for(const it of versionItems(f)){
+      const v=it.v; const d = k => v[k]&&v[k].date ? ((v[k].range?fmt(v[k].start)+"–":"")+fmtFull(v[k].date)) : "—";
+      const pc = it.kind==="cli" ? "—" : VKEYS.map(k=> v[k]&&v[k].pct!==null&&v[k].pct!==undefined ? Math.round(v[k].pct)+"%" : "—").join(" / ");
+      const tag = it.kind==="cli"?`<span class="tag d">${CLI}</span>`: it.crit?'<span class="tag c">crítico</span>':'<span class="tag">obra</span>';
+      h+=`<tr class="${it.kind==="cli"?"cli":it.crit?"crit":""}"><td>${it.name}</td><td>${tag}</td>${VKEYS.map(k=>`<td class="num ${k===CUR?"cur":""}">${d(k)}</td>`).join("")}${VKEYS.slice(0,-1).map(k=>`<td class="num">${pill(vdays(v[k],v[CUR]))}</td>`).join("")}<td class="num">${pc}</td></tr>`;
+    }
+    h+="</tbody></table>";
+    h+=`<h5 class="sub">Disciplinas (grupos do cronograma) — término previsto e avanço realizado × previsto na data de status de cada versão</h5>`;
+    h+=`<table><thead><tr><th>Disciplina</th>${VERS.map(v=>`<th class="num">Término ${v.rotulo}</th>`).join("")}${VKEYS.slice(0,-1).map(k=>`<th class="num">Δ ${VLAB[k]}→${VLAB[CUR]}</th>`).join("")}${VERS.map(v=>`<th class="num">Real / prev. ${v.rotulo}</th>`).join("")}</tr></thead><tbody>`;
+    for(const g of F.groups){
+      const v=g.v; if(!v[CUR]) continue;
+      const rp = k => v[k] ? `${Math.round(v[k].pct)}%${v[k].prev?` / ${(v[k].prev||"").trim()}`:""}` : "—";
+      const behind = k => v[k] && v[k].prev && (parseFloat((v[k].prev||"0").replace("%",""))||0) - v[k].pct >= 10;
+      const nm = g.name.charAt(0)+g.name.slice(1).toLowerCase();
+      h+=`<tr class="${v[CUR].crit?"crit":""}"><td>${nm}</td>${VKEYS.map(k=>`<td class="num ${k===CUR?"cur":""}">${v[k]?fmtFull(v[k].finish):"—"}</td>`).join("")}${VKEYS.slice(0,-1).map(k=>`<td class="num">${pill(v[k]?days(v[k].finish,v[CUR].finish):null)}</td>`).join("")}${VKEYS.map(k=>`<td class="num" ${behind(k)?'style="color:var(--crit);font-weight:700"':""}>${rp(k)}</td>`).join("")}</tr>`;
+    }
+    h+="</tbody></table>";
+  }
+  h+=`<p class="hint" style="margin-top:8px">Em vermelho: realizado 10 p.p. ou mais abaixo do previsto da construtora na data de status da versão. "Real" é o % concluído do grupo no cronograma; "prev." é o campo de % previsto da construtora, quando existe.</p>`;
+  box.innerHTML=h;
+}
+
+function renderTable(floors){
+  const box=document.getElementById("tbl"); let h="";
+  for(const f of floors){
+    const F=DATA.floors[f];
+    h+=`<h4 style="margin:12px 0 4px;color:var(--teal-dark)">${ENAME[f]} — término ${fmtFull(F.finish)} (baseline ${fmtFull(F.bl_finish)}, folga ${slackTxt(F.slack)})${F.prev?` · previsto ${F.prev}`:""}${F.real?` / realizado ${F.real}`:""}</h4>`;
+    h+=`<table><thead><tr><th>Marco / etapa</th><th>Tipo</th><th class="num">Início</th><th class="num">Término</th><th class="num">Baseline</th><th class="num">Δ dias</th><th class="num">% real.</th><th class="num">Folga</th></tr></thead><tbody>`;
+    const items=[];
+    for(const m of (MS[f]||[])) items.push({n:SHORT[m.label]||m.label, t:m.crit?'<span class="tag c">crítico</span>':'<span class="tag">obra</span>', s:m.start, e:m.date, b:m.bl, p:m.pct, sl:m.slack, cls:m.crit?"crit":""});
+    for(const it of cliItems(f)) items.push({n:it.name, t:`<span class="tag d">${CLI}</span>`, s:it.start, e:it.finish, b:"", p:null, sl:it.slack, cls:"cli"});
+    items.sort((a,b)=>a.e<b.e?-1:1);
+    for(const it of items){
+      const dd = it.b? days(it.b,it.e) : null;
+      h+=`<tr class="${it.cls}"><td>${it.n}</td><td>${it.t}</td><td class="num">${fmtFull(it.s)}</td><td class="num"><b>${fmtFull(it.e)}</b></td><td class="num">${it.b?fmtFull(it.b):"—"}</td><td class="num">${dd===null?"—":(dd>0?"+":"")+dd}</td><td class="num">${it.p===null?"—":Math.round(it.p)+"%"}</td><td class="num">${slackTxt(it.sl)}</td></tr>`;
+    }
+    h+="</tbody></table>";
+  }
+  box.innerHTML=h;
+}
+
+function renderKpis(isVer){
+  const k=document.getElementById("kpis");
+  const list = isVer ? (META.kpis_confronto||META.kpis||[]) : (META.kpis||[]);
+  k.innerHTML = list.map(t=>`<div class="kpi ${t.classe||""}"><div class="l">${t.l}</div><div class="v">${t.v}</div><div class="n">${t.n||""}</div></div>`).join("");
+}
+
+document.querySelectorAll("button.chip[data-view]").forEach(b=>b.addEventListener("click",()=>{state.view=b.dataset.view; document.querySelectorAll("button.chip[data-view]").forEach(o=>o.setAttribute("aria-pressed",o===b)); render();}));
+document.querySelectorAll("button.chip[data-floor]").forEach(b=>b.addEventListener("click",()=>{state.floor=b.dataset.floor; document.querySelectorAll("button.chip[data-floor]").forEach(o=>o.setAttribute("aria-pressed",o===b)); render();}));
+document.querySelectorAll("button.chip[data-win]").forEach(b=>b.addEventListener("click",()=>{state.win=b.dataset.win; document.querySelectorAll("button.chip[data-win]").forEach(o=>o.setAttribute("aria-pressed",o===b)); render();}));
+document.getElementById("togBase").addEventListener("change",e=>{state.base=e.target.checked;render();});
+document.getElementById("togCli").addEventListener("change",e=>{state.cli=e.target.checked;render();});
+document.getElementById("togCrit").addEventListener("change",e=>{state.crit=e.target.checked;render();});
+document.getElementById("togRefs").addEventListener("change",e=>{state.refs=e.target.checked;render();});
+window.addEventListener("resize",()=>render());
+if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>render());
+render();
+</script>
+</body>
+</html>

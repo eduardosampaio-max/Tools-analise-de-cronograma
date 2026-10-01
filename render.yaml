@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: tools-analise-cronograma
+    runtime: docker
+    plan: 1c-2g
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/ping
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+      - key: PYTHON_BIN
+        value: python3
+      - key: DRIVE_MODE
+        value: google
+      - key: OCR_ENABLED
+        value: "true"
+      - key: OCR_LANGS
+        value: por+eng
+      - key: OCR_PDF_MODE
+        value: always
+      - key: AUTO_SYNC_ENABLED
+        value: "true"
+      - key: AUTO_SYNC_TIMEZONE
+        value: America/Sao_Paulo
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: GOOGLE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: GOOGLE_ROOT_RESIDENCIAL_ID
+        sync: false
+      - key: GOOGLE_ROOT_CORPORATIVO_ID
+        sync: false
+      - key: GOOGLE_ROOT_PREDIAL_ID
+        sync: false
+    disk:
+      name: cronograma-data
+      mountPath: /var/data
+      sizeGB: 5

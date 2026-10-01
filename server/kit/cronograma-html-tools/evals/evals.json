@@ -1,0 +1,23 @@
+{
+  "skill_name": "cronograma-html-tools",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Segue o cronograma atual da obra em .mpp (torre residencial de 22 pavimentos, construtora X). Preciso do HTML de marcos para a reunião de sexta com o incorporador. Não tenho o contrato aqui.",
+      "expected_output": "Uma única mensagem inicial confirmando o que recebeu e pedindo só o que falta (versões anteriores na pasta, data contratual 'a confirmar', objetivo da reunião já dado); depois leitura do .mpp, proposta de estratificação A/B (torre × faixas de pavimentos/fases) e lista de marcos residenciais; HTML gerado pelo template; resumo em linguagem simples + 3 perguntas.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "compara a versão da semana 9 e da 12 com a atual e me fala o que atrasou. os arquivos estão na pasta CRONOGRAMA/EXECUTADO",
+      "expected_output": "Extração das três versões com chaves da mais antiga para a vigente; --resumo com deltas por marco; explicação de compressão × replanejamento; visão 'Confronto' no HTML; resumo com os 3 maiores deslocamentos e o gate atual.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "só tenho o pdf do cronograma que a construtora mandou, dá pra fazer aquele html?",
+      "expected_output": "Explica em linguagem simples que o PDF não permite verificar folgas, baseline e % — pede o .mpp/.xml à construtora (sugere o texto do pedido) e oferece uma leitura preliminar limitada enquanto isso, sem gerar o HTML como se fosse verificado.",
+      "files": []
+    }
+  ]
+}

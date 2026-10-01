@@ -1,0 +1,82 @@
+{
+  "_comentario": "Exemplo real: DPRJ – fit-out Dataprev (Ventura Corporate Towers, RJ). Estratificação por pavimento; marcos do cliente na seção 'DATAS DATAPREV' do MPP; três versões (Semanas 09, 12 e 14 da REV 01). Copie este arquivo e adapte estratos, marcos, campos e textos ao seu projeto.",
+  "raw": "versoes_raw_dprj.json",
+  "versoes": [
+    {"key": "s09", "rotulo": "Sem 09"},
+    {"key": "s12", "rotulo": "Sem 12"},
+    {"key": "s14", "rotulo": "Sem 14"}
+  ],
+  "raiz_obra": "^OBRA$",
+  "secao_cliente": "^DATAS DATAPREV$",
+  "nivel_estrato": 3,
+  "nivel_grupo": 4,
+  "estratos": [
+    {"id": "17º", "nome": "17º pavimento", "curto": "17", "regex": "^17º PAVIMENTO"},
+    {"id": "16º", "nome": "16º pavimento", "curto": "16", "regex": "^16º PAVIMENTO"},
+    {"id": "15º", "nome": "15º pavimento", "curto": "15", "regex": "^15º PAVIMENTO"},
+    {"id": "14º", "nome": "14º pavimento", "curto": "14", "regex": "^14º PAVIMENTO"}
+  ],
+  "campos": {"prev": "text1", "real": "text7"},
+  "marcos": [
+    {"label": "Estrutura do forro de gesso concluída", "tarefa": "^Estrutura de forro$", "grupo": "DRYWALL"},
+    {"label": "Fechamento do forro de gesso (plaqueamento)", "tarefa": "^Plaqueamento de forro$", "grupo": "DRYWALL"},
+    {"label": "Término do drywall", "tarefa": "^Término do Drywall$", "grupo": "DRYWALL"},
+    {"label": "Escada concluída e recebida", "tarefa": "^Término da Escada e recebimento", "grupo": "ESCADA"},
+    {"label": "CPD — cabeamento concluído", "tarefa": "^Término do cabeamento IDF$", "grupo": "CPD|MISSÃO CRÍTICA"},
+    {"label": "Forro modular concluído (placas técnicas)", "tarefa": "^Placas técnicas$", "grupo": "FORRO MODULAR"},
+    {"label": "Estruturas do mobiliário entregues", "tarefa": "^Entrega das estruturas$", "grupo": "MOBILIÁRIO"},
+    {"label": "Carpete instalado", "tarefa": "^Instalação de carpete novo$", "grupo": "CARPETE"},
+    {"label": "Sprinklers — testes com ar e água", "tarefa": "^Testes com ar e água$", "grupo": "INCEND"},
+    {"label": "Retirada de proteções", "tarefa": "^Retirada de proteção dos caixilhos", "grupo": "LIMPEZA"},
+    {"label": "SDAI — teste de detecção", "tarefa": "^Teste de detecção$", "grupo": "INCEND"},
+    {"label": "Dados e voz — testes concluídos", "tarefa": "^Termino de Dados e Voz$", "grupo": "DADOS"},
+    {"label": "Automação — configuração e testes", "tarefa": "^Configuração e testes$", "grupo": "AUTOMAÇÃO"},
+    {"label": "Limpeza fina concluída (FVS)", "tarefa": "^Termino da Limpeza fina", "grupo": "LIMPEZA"},
+    {"label": "Entrega final do pavimento", "tarefa": "^Entrega final$", "grupo": "ENTREGA FINAL"}
+  ],
+  "eixo": {"inicio": "2026-06-01", "fim": "2026-12-01", "foco_marcos": "2026-08-31", "foco_confronto": "2026-08-17"},
+  "referencias": [
+    {"d": "2026-09-05", "label": "Status 05/09", "kind": "status", "lvl": 0},
+    {"d": "2026-11-05", "label": "05/11 · 6 m do instrumento", "kind": "ref", "lvl": 3},
+    {"d": "2026-11-12", "label": "12/11 · 6 m das assinaturas", "kind": "ref", "lvl": 2},
+    {"d": "2026-11-20", "label": "20/11 · entrega REV 01", "kind": "end", "lvl": 1},
+    {"d": "2026-11-21", "label": "21/11 · baseline", "kind": "base", "lvl": 0}
+  ],
+  "meta": {
+    "titulo": "DPRJ · Nova Sede Dataprev RJ — Cronograma: marcos por pavimento",
+    "subtitulo": "Base: CRONOGRAMA DATA PREV 5209-24 · REV 01 – Semana 14 (Athié Wohnrath) · data de status 05/09/2026 · confronto com as Semanas 09 (31/07) e 12 (21/08) · leitura Tools em 09/09/2026",
+    "unidade": "pavimento",
+    "unidade_plural": "pavimentos",
+    "rotulo_cliente": "Dataprev",
+    "descricao_cliente": "seção \"Datas Dataprev\" do MPP",
+    "rotulo_foco": "Set–Nov (foco)",
+    "rotulo_full": "Jun–Nov (obra completa)",
+    "rotulos_curtos": {"Forro modular concluído (placas técnicas)": "Forro modular concluído"},
+    "kpis": [
+      {"classe": "ok", "l": "Avanço físico (AW)", "v": "49% <small>realizado</small>", "n": "previsto 39% · semana 04/09"},
+      {"classe": "crit", "l": "Entrega 15º/16º/17º", "v": "20/11/2026", "n": "folga total zero · baseline 21/11"},
+      {"classe": "warn", "l": "Entrega 14º (antecipada)", "v": "30/10/2026", "n": "18 d de folga vs 20/11 · zero vs compromisso"},
+      {"classe": "crit", "l": "Gate desta semana", "v": "Forro de gesso", "n": "estrutura 80–90% · plaqueamento 09–11/09 · vistoria Zuver 08–09/09"},
+      {"classe": "warn", "l": "Prazo contratual (cl. 5.1.1)", "v": "05/11 <small>ou</small> 12/11", "n": "6 meses da assinatura — a conciliar com 20/11"},
+      {"classe": "ok", "l": "Data de status", "v": "05/09/2026", "n": "REV 01 – Semana 14 · salvo 08/09"}
+    ],
+    "kpis_confronto": [
+      {"classe": "ok", "l": "% concluído no MPP (obra)", "v": "16% → 35% → 48%", "n": "Sem 09 (31/07) · Sem 12 (21/08) · Sem 14 (05/09)"},
+      {"classe": "ok", "l": "Entrega dos pavimentos", "v": "inalterada", "n": "20/11 (15º–17º) e 30/10 (14º) nas 3 versões"},
+      {"classe": "crit", "l": "Estrutura do forro 15º–17º", "v": "+6 d <small>vs Sem 09</small>", "n": "+9 a +12 d vs Sem 12 · 02/09 → 27–29/08 → 07–08/09"},
+      {"classe": "crit", "l": "Forro de gesso 14º", "v": "+19 d", "n": "plaqueamento 26/08 → 05/09 → 14/09 · estrutura 0% em 05/09"},
+      {"classe": "warn", "l": "Janela de plaqueamento 15º–17º", "v": "7 → 3 <small>dias</small>", "n": "03–11/09 (Sem 09) comprimida para 09–11/09 (Sem 14)"},
+      {"classe": "warn", "l": "Escada 17º · CPD", "v": "+38 d <small>· −9 a −21 d</small>", "n": "escada 22/08 → 29/09 · CPD antecipado p/ TI Dataprev"}
+    ],
+    "leitura": "<b>Leitura Tools:</b> os 15º, 16º e 17º pavimentos têm folga total zero até a entrega em 20/11/2026; o caminho crítico começa no fechamento do forro de gesso (plaqueamento 09–11/09) e passa por pintura de teto, forro modular, carpete, estruturas do mobiliário e limpeza fina. O 14º foi antecipado para 30/10/2026 (compromisso com a Dataprev) — sem folga em relação a essa data. O prazo contratual (6 meses da assinatura) aponta para 05/11 ou 12/11/2026 e não está conciliado com o cronograma.",
+    "leitura_confronto": "<b>Leitura Tools — confronto REV 01 Semanas 09 (status 31/07), 12 (21/08) e 14 (05/09):</b> a data de entrega não se moveu em nenhuma das três versões (20/11 nos 15º–17º; 30/10 no 14º), mas a estruturação e o fechamento do forro de gesso deslizaram. <b>15º–17º:</b> término da estrutura de forro em 02/09 (Sem 09) → 27–29/08 (Sem 12) → 07–08/09 (Sem 14), isto é, +6 d contra a Sem 09 e +9 a +12 d contra a Sem 12; para manter o plaqueamento em 11/09, a janela foi comprimida de 7 dias úteis (03–11/09) para 3 (09–11/09). <b>14º:</b> estrutura 19/08 → 31/08 → 10/09 (+22 d; ainda 0% em 05/09), plaqueamento 26/08 → 05/09 → 14/09 (+19 d), forro modular +13 d — a entrega em 30/10 foi mantida por compressão dos acabamentos e testes. <b>Escada do 17º:</b> 22/08 → 24/09 → 29/09 (+38 d). <b>CPD:</b> antecipado 9 a 21 d para a TI da Dataprev. Entre a Sem 09 e a Sem 12 a AW antecipou toda a cadeia de acabamento dos 15º–17º em 4 a 9 dias (forro modular, carpete, mobiliário) sem mover a entrega; esse colchão foi consumido pelo atraso do forro na Sem 14.",
+    "notas": [
+      "<b>Fonte:</b> arquivo nativo do MS Project (1.337 linhas, autor Guilherme Franco/AW), linha de base única (término 21/11/2026). Percentuais \"previsto\" e \"realizado\" dos pavimentos são os campos da AW; nas barras, o preenchimento é o % concluído da tarefa/grupo no MPP.",
+      "<b>Confronto de versões:</b> arquivos \"CRONOGRAMA - DATA PREV - 5209-24 - REV 01 - SEMANA 09.mpp\" (status 31/07, salvo 10/08, EXECUTADO/2026.07.31), \"… SEMANA 12.mpp\" (status 21/08, salvo 28/08, EXECUTADO/2026.08.21) e \"… SEMANA 14.mpp\" (status 05/09, salvo 08/09). As três versões compartilham a mesma linha de base (21/11) e a mesma data de término (20/11). Os marcos foram pareados por pavimento, grupo e nome da tarefa; onde a tarefa não existe na versão, a célula mostra \"—\". Deltas positivos = postergação; negativos = antecipação.",
+      "<b>Marcos de obra</b> são as datas de término das etapas que governam a entrega. <b>Marcos Dataprev</b> são a seção \"Datas Dataprev\" inserida pela AW (racks, equipamentos, no-breaks, fibra, mobiliário, cadeiras, comunicação visual) — dependem de definições do cliente.",
+      "<b>Datas de referência:</b> 05/09 data de status · 05/11 e 12/11 = 6 meses da data do instrumento (05/05/2026) e da conclusão das assinaturas (12/05/2026), cl. 5.1.1 · 20/11 término REV 01 · 21/11 linha de base. O relatório semanal AW de 04/09 cita ainda 08/11 (previsto) e 07/12 (contratual) — divergência a conciliar."
+    ],
+    "rodape": "Documento de trabalho da gerenciadora (Tools Gerenciamento e Engenharia). Não substitui o cronograma oficial da construtora."
+  },
+  "saida": "saida/DPRJ_Cronograma_Marcos_por_Pavimento_Sem14_kit.html"
+}

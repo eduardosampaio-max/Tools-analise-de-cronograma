@@ -1,0 +1,17 @@
+.git
+.gitignore
+.github
+.vscode
+.idea
+node_modules
+**/node_modules
+client/dist
+server/data
+**/*.log
+**/.DS_Store
+server/.env
+.env
+.env.*
+!**/.env.example
+*.zip
+*.7z
